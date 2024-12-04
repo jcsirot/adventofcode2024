@@ -11,7 +11,8 @@ public class Main {
             int day = Integer.parseInt(args[0]);
         }
         // runDay(1, 1, 2);
-        runDay(2, 1, 2);
+        // runDay(2, 1, 2);
+        runDay(4, 1, 2);
     }
 
     private static void runDay(int day, int... parts) throws Exception {
