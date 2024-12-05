@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class Day1Test {
 
-    private static String PART_1_DATA = """
+    private static String PUZZLE_DATA = """
         3   4
         4   3
         2   5
@@ -17,14 +17,14 @@ class Day1Test {
     @Test
     public void should_pass_part_1() {
         Day1 day1 = new Day1();
-        String distance = day1.part1(PART_1_DATA);
+        String distance = day1.part1(PUZZLE_DATA);
         assertThat(distance).isEqualTo("11");
     }
 
     @Test
     public void should_pass_part_2() {
         Day1 day1 = new Day1();
-        String distance = day1.part2(PART_1_DATA);
+        String distance = day1.part2(PUZZLE_DATA);
         assertThat(distance).isEqualTo("31");
     }
 }

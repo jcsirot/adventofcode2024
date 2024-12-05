@@ -11,13 +11,14 @@ public class Main {
             int day = Integer.parseInt(args[0]);
         }
         // runDay(1, 1, 2);
-        // runDay(2, 1, 2);
+        //runDay(2, 1, 2);
+        runDay(3, 1, 2);
         runDay(4, 1, 2);
     }
 
     private static void runDay(int day, int... parts) throws Exception {
         StringBuilder sb = new StringBuilder();
-        InputStream inputStream = Main.class.getResourceAsStream("/org/chelonix/aoc2024/day%s/day%S.txt".formatted(day, day));
+        InputStream inputStream = Main.class.getResourceAsStream("/org/chelonix/aoc2024/day%s/input.txt".formatted(day));
         if (inputStream != null) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                 String line;
