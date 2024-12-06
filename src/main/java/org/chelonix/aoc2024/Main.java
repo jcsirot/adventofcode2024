@@ -3,6 +3,7 @@ package org.chelonix.aoc2024;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 
 public class Main {
 
@@ -10,10 +11,10 @@ public class Main {
         if (args.length > 0) {
             int day = Integer.parseInt(args[0]);
         }
-        // runDay(1, 1, 2);
-        //runDay(2, 1, 2);
-        // runDay(3, 1, 2);
-        // runDay(4, 1, 2);
+        runDay(1, 1, 2);
+        runDay(2, 1, 2);
+        runDay(3, 1, 2);
+        runDay(4, 1, 2);
         runDay(5, 1, 2);
     }
 
@@ -29,8 +30,13 @@ public class Main {
             }
             Class klass = Class.forName("org.chelonix.aoc2024.day%s.Day%s".formatted(day, day));
             for (int part: parts) {
-                String result = (String) klass.getMethod("part%s".formatted(part), String.class).invoke(klass.getConstructors()[0].newInstance(), sb.toString());
-                System.out.println("Day %s part %s: %s".formatted(day, part, result));
+
+                Object instance = klass.getConstructors()[0].newInstance();
+                Method method = klass.getMethod("part%s".formatted(part), String.class);
+                long now = System.currentTimeMillis();
+                String result = (String)method.invoke(instance, sb.toString());
+                long executed = System.currentTimeMillis();
+                System.out.println("Day %s part %s: %s in %s ms".formatted(day, part, result, executed-now));
             }
         } else {
             System.out.println("Day %s: UNFINISHED".formatted(day));
