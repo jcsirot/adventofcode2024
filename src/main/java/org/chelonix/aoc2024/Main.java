@@ -11,12 +11,13 @@ public class Main {
         if (args.length > 0) {
             int day = Integer.parseInt(args[0]);
         }
-        runDay(1, 1, 2);
-        runDay(2, 1, 2);
-        runDay(3, 1, 2);
-        runDay(4, 1, 2);
-        runDay(5, 1, 2);
-        runDay(6, 1, 2);
+//        runDay(1, 1, 2);
+//        runDay(2, 1, 2);
+//        runDay(3, 1, 2);
+//        runDay(4, 1, 2);
+//        runDay(5, 1, 2);
+//        runDay(6, 1, 2);
+        runDay(7, 1, 2);
     }
 
     private static void runDay(int day, int... parts) throws Exception {
