@@ -24,15 +24,19 @@ public class MemoryMap {
   }
 
   public void compactAndFragment() {
+    int bindex = memoryMap.length - 1;
+    int findex = 0;
 mainloop:
     while(true) {
-      for (int i = memoryMap.length - 1; i >= 0; i--) {
+      for (int i = bindex; i >= 0; i--) {
         int id = memoryMap[i];
         if (id != 0) {
-          for (int j = 0; j < i; j++) {
+          for (int j = findex; j < i; j++) {
             if (memoryMap[j] == 0) {
               memoryMap[i] = 0;
               memoryMap[j] = id;
+              bindex = i;
+              findex = j;
               continue mainloop;
             }
           }
