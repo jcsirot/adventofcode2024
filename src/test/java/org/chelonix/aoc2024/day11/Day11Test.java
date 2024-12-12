@@ -1,9 +1,7 @@
 package org.chelonix.aoc2024.day11;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
-import org.chelonix.aoc2024.day10.Day10;
 import org.junit.jupiter.api.Test;
 
 class Day11Test {
