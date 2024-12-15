@@ -11,19 +11,20 @@ public class Main {
         if (args.length > 0) {
             int day = Integer.parseInt(args[0]);
         }
-        runDay(1, 1, 2);
-        runDay(2, 1, 2);
-        runDay(3, 1, 2);
-        runDay(4, 1, 2);
-        runDay(5, 1, 2);
-        runDay(6, 1, 2);
-        runDay(7, 1, 2);
-        runDay(8, 1, 2);
-        runDay(9, 1, 2);
-        runDay(10, 1, 2);
-        runDay(11, 1, 2);
-        runDay(12, 1, 2);
-        runDay(13, 1, 2);
+//        runDay(1, 1, 2);
+//        runDay(2, 1, 2);
+//        runDay(3, 1, 2);
+//        runDay(4, 1, 2);
+//        runDay(5, 1, 2);
+//        runDay(6, 1, 2);
+//        runDay(7, 1, 2);
+//        runDay(8, 1, 2);
+//        runDay(9, 1, 2);
+//        runDay(10, 1, 2);
+//        runDay(11, 1, 2);
+//        runDay(12, 1, 2);
+//        runDay(13, 1, 2);
+        runDay(14, 1, 2);
     }
 
     private static void runDay(int day, int... parts) throws Exception {
