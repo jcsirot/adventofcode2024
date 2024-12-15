@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 class Day13Test {
 
-  private static String PUZZLE_INPUT = """
+  private static final String PUZZLE_INPUT = """
       Button A: X+94, Y+34
       Button B: X+22, Y+67
       Prize: X=8400, Y=5400
