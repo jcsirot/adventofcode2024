@@ -1,14 +1,16 @@
 package org.chelonix.aoc2024.day15;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
 public class LargeWarehouse {
 
     private record Coordinate(int x, int y) {
-        public Coordinate adjacent(Move move) {
-            return switch (move) {
+        public Coordinate adjacent(Direction direction) {
+            return switch (direction) {
                 case UP -> new Coordinate(x, y-1);
                 case DOWN -> new Coordinate(x, y+1);
                 case LEFT -> new Coordinate(x-1, y);
@@ -18,6 +20,20 @@ public class LargeWarehouse {
     }
 
     private record Tile(Coordinate c, Element element) {}
+
+    private record Box(Coordinate c) {
+        List<Coordinate> coordinatesAt(Direction m) {
+            return switch (m) {
+                case UP -> List.of(c.adjacent(Direction.UP), c.adjacent(Direction.UP).adjacent(
+                    Direction.RIGHT));
+                case DOWN -> List.of(c.adjacent(Direction.DOWN), c.adjacent(Direction.DOWN).adjacent(
+                    Direction.RIGHT));
+                case LEFT -> List.of(c.adjacent(Direction.LEFT));
+                case RIGHT -> List.of(c.adjacent(Direction.RIGHT).adjacent(Direction.RIGHT));
+            };
+        }
+    }
+
     private enum Element {
         WALL, BOX_LEFT, BOX_RIGHT
     }
@@ -71,112 +87,64 @@ public class LargeWarehouse {
         return t -> t.c().equals(c) && t.element() == Element.BOX_RIGHT;
     }
 
-    private void moveBox(Coordinate from, Coordinate to) {
-        tiles.stream().filter(t -> t.c().equals(from)).findFirst().ifPresent(t -> {
-            tiles.remove(t);
-            tiles.add(new Tile(to, t.element()));
-        });
+    private void moveBoxes(Set<Box> boxes, Direction direction) {
+        List<Tile> newTiles = new ArrayList<>();
+        for (Box b : boxes) {
+            tiles.remove(new Tile(b.c(), Element.BOX_LEFT));
+            tiles.remove(new Tile(b.c().adjacent(Direction.RIGHT), Element.BOX_RIGHT));
+            newTiles.add(new Tile(b.c().adjacent(direction), Element.BOX_LEFT));
+            newTiles.add(new Tile(b.c().adjacent(Direction.RIGHT).adjacent(direction), Element.BOX_RIGHT));
+        }
+        tiles.addAll(newTiles);
     }
 
-    public void tick(Move move) {
-        Coordinate c = robotCoordinate.adjacent(move);
+    public void tick(Direction direction) {
+        Coordinate c = robotCoordinate.adjacent(direction);
         if (isEmpty(c)) {
             robotCoordinate = c;
         } else if (containsBox(c)) {
-            if (tryMoveBox(c, move)) {
+            Set<Box> movedBoxes = tryMoveBox(boxAt(c), direction);
+            if (! movedBoxes.isEmpty()) {
+                moveBoxes(movedBoxes, direction);
                 robotCoordinate = c;
             }
         }
     }
 
-    /**
-     * Try to move the box at coordinate c in the direction of move.
-     * @param c coordinate of the box
-     * @param move direction to move the box
-     * @return true if the box can be moved, false otherwise
-     */
-    private boolean tryMoveBox(Coordinate c, Move move) {
-        if (move == Move.RIGHT) {
-            Coordinate next = c.adjacent(move);
-            Coordinate nextNext = next.adjacent(move);
-            if (isEmpty(nextNext)) {  // ->[]
-                return true;
-            } else if (containsBox(nextNext)) {  // ->[][]
-                return tryMoveBox(nextNext, move);
-            }
-        } else if (move == Move.LEFT) {
-            Coordinate next = c.adjacent(move);
-            Coordinate nextNext = next.adjacent(move);
-            if (isEmpty(next)) { // .[]<-
-                return true;
-            } else if (containsBox(nextNext)) { // [][]<-
-                return tryMoveBox(nextNext, move);
-            }
-        } else {  // Up or Down
-            Coordinate next = c.adjacent(move);
-            // []
-            // ^
-            if (containsBoxLeft(c)) {
-                Coordinate nextNext = next.adjacent(Move.RIGHT);
-                // ..
-                // []
-                // ^
-                if (isEmpty(next) && isEmpty(nextNext)) {
-                    return true;
-                // .[]
-                // [].
-                // ^
-                } else if (isEmpty(next) && containsBox(nextNext)) {
-                    return tryMoveBox(nextNext, move);
-                // [].
-                // .[]
-                //  ^
-                } else if (containsBox(next) && isEmpty(nextNext)) {
-                    return tryMoveBox(next.adjacent(Move.LEFT), move);
-                // []
-                // []
-                // ^
-                } else if (containsBoxLeft(next) && containsBoxRight(nextNext)) {
-                    return tryMoveBox(next, move);
-                // [][]
-                // .[].
-                //  ^
-                }  else if (containsBoxRight(next) && containsBoxLeft(nextNext)) {
-                    return tryMoveBox(next.adjacent(Move.LEFT), move) && tryMoveBox(nextNext, move);
-                }
-            // []
-            //  ^
+    private Box boxAt(Coordinate c) {
+        return tiles.stream().filter(t -> t.c().equals(c)).map(t -> {
+            if (t.element() == Element.BOX_LEFT) {
+                return new Box(t.c());
             } else {
-                Coordinate nextNext = next.adjacent(Move.LEFT);
-                // ..
-                // []
-                //  ^
-                if (isEmpty(next) && isEmpty(nextNext)) {
-                    return true;
-                // [].
-                // .[]
-                //   ^
-                } else if (isEmpty(next) && containsBox(nextNext)) {
-                    return tryMoveBox(nextNext, move);
-                // .[]
-                // [].
-                //  ^
-                } else if (containsBox(next) && isEmpty(nextNext)) {
-                    return tryMoveBox(next.adjacent(Move.RIGHT), move);
-                // []
-                // []
-                //  ^
-                } else if (containsBoxLeft(next) && containsBoxRight(nextNext)) {
-                    return tryMoveBox(next, move);
-                // [][]
-                // .[].
-                //  ^
-                }  else if (containsBoxRight(next) && containsBoxLeft(nextNext)) {
-                    return tryMoveBox(next.adjacent(Move.LEFT), move) && tryMoveBox(nextNext, move);
+                return new Box(t.c().adjacent(Direction.LEFT));
+            }
+        }).findFirst().orElseGet(() -> null);
+    }
+
+    /**
+     * Try to move a box in the given direction.
+     * @param c the coordinate of the box
+     * @param direction the direction to move the box
+     * @return the list of box to move
+     */
+    private Set<Box> tryMoveBox(Box box, Direction direction) {
+        Set<Box> boxes = new HashSet<>();
+        for (Coordinate c: box.coordinatesAt(direction)) {
+            if (isEmpty(c)) {
+                boxes.add(box);
+            } else if (containsBox(c)) {
+                Set<Box> movedBox = tryMoveBox(boxAt(c), direction);
+                if (movedBox.isEmpty()) {
+                    return Set.of();
+                } else {
+                    boxes.add(box);
+                    boxes.addAll(movedBox);
                 }
+            } else {
+                return Set.of();
             }
         }
-        return false;
+        return boxes;
     }
 
     public long allBoxCoordinates() {

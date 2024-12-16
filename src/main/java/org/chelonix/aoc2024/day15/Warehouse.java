@@ -5,18 +5,8 @@ import java.util.Set;
 
 public class Warehouse {
 
-    private record Coordinate(int x, int y) {
-        public Coordinate move(Move move) {
-            return switch (move) {
-                case UP -> new Coordinate(x, y-1);
-                case DOWN -> new Coordinate(x, y+1);
-                case LEFT -> new Coordinate(x-1, y);
-                case RIGHT -> new Coordinate(x+1, y);
-            };
-        }
-    }
-
     private record Tile(Coordinate c, Element element) {}
+
     private enum Element {
         WALL, BOX
     }
@@ -25,9 +15,9 @@ public class Warehouse {
 
     private Set<Tile> tiles;
 
-    private Warehouse(Set<Tile> tiles, int rx, int ry) {
+    private Warehouse(Set<Tile> tiles, Coordinate robot) {
         this.tiles = tiles;
-        this.robot = new Coordinate(rx, ry);
+        this.robot = robot;
     }
 
     public static Builder newBuilder() {
@@ -53,24 +43,24 @@ public class Warehouse {
         });
     }
 
-    public void tick(Move move) {
-        Coordinate c = robot.move(move);
+    public void tick(Direction direction) {
+        Coordinate c = robot.move(direction);
         if (isEmpty(c)) {
             robot = c;
         } else if (containsbox(c)) {
-            if (moveBox(c, move)) {
+            if (moveBox(c, direction)) {
                 robot = c;
             }
         }
     }
 
-    private boolean moveBox(Coordinate c, Move move) {
-        Coordinate next = c.move(move);
+    private boolean moveBox(Coordinate c, Direction direction) {
+        Coordinate next = c.move(direction);
         if (isEmpty(next)) {
             move(c, next);
             return true;
         } else if (containsbox(next)) {
-            if (moveBox(next, move)) {
+            if (moveBox(next, direction)) {
                 move(c, next);
                 return true;
             }
@@ -106,7 +96,7 @@ public class Warehouse {
 
     public static class Builder {
         private int height = 0;
-        private int rx, ry;
+        private Coordinate robot;
         private Set<Tile> tiles = new HashSet<>();
 
         public void parseLine(String line) {
@@ -117,15 +107,14 @@ public class Warehouse {
                 } else if (c == 'O') {
                     tiles.add(new Tile(new Coordinate(i, height), Element.BOX));
                 } else if (c == '@') {
-                    rx = i;
-                    ry = height;
+                    robot = new Coordinate(i, height);
                 }
             }
             height++;
         }
 
         public Warehouse build() {
-            return new Warehouse(tiles, rx, ry);
+            return new Warehouse(tiles, robot);
         }
     }
 
