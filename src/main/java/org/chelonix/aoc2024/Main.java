@@ -24,7 +24,8 @@ public class Main {
 //        runDay(11, 1, 2);
 //        runDay(12, 1, 2);
 //        runDay(13, 1, 2);
-        runDay(14, 1, 2);
+//        runDay(14, 1, 2);
+        runDay(15, 1, 2);
     }
 
     private static void runDay(int day, int... parts) throws Exception {
