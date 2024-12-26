@@ -30,7 +30,12 @@ public class Main {
         runDay(17, 1, 2);
         runDay(18, 1, 2);
         runDay(19, 1, 2);
+        runDay(20, 1, 2);
+        runDay(21, 1, 2);
         runDay(22, 1, 2);
+        runDay(23, 1, 2);
+        runDay(24, 1, 2);
+        runDay(25, 1);
     }
 
     private static void runDay(int day, int... parts) throws Exception {
