@@ -82,7 +82,7 @@ public class Day23 {
 
     String password = maxClique.stream().toList().stream().sorted(String::compareTo).collect(Collectors.joining(","));
 
-    System.out.println(maxClique);
+    // System.out.println(maxClique);
 
     return "%s".formatted(password);
   }
